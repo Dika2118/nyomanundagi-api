@@ -12,9 +12,19 @@ use Illuminate\Support\Facades\Storage;
 
 class ServiceController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $services = Service::orderBy('sort_order', 'asc')->orderBy('id', 'asc')->get();
+        $query = Service::query();
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        $services = $query->orderBy('sort_order', 'asc')->orderBy('id', 'asc')->get();
 
         return response()->json([
             'success' => true,
@@ -58,6 +68,8 @@ class ServiceController extends Controller
                 Storage::disk('public')->delete($service->image);
             }
             $validated['image'] = $request->file('image')->store('services', 'public');
+        } elseif (!array_key_exists('image', $validated) || is_null($validated['image']) || $validated['image'] === '') {
+            unset($validated['image']);
         }
 
         $service->update($validated);

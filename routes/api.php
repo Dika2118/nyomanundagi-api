@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\HeroBannerController;
 use App\Http\Controllers\Api\ProjectCategoryController;
 use App\Http\Controllers\Api\ProjectController;
@@ -31,3 +32,5 @@ Route::apiResource('projects', ProjectController::class);
 Route::apiResource('project-images', ProjectImageController::class);
 Route::apiResource('team-members', TeamMemberController::class);
 Route::apiResource('users', UserController::class);
+Route::apiResource('blogs', BlogController::class);
+

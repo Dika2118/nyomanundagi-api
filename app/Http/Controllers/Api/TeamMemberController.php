@@ -12,9 +12,20 @@ use Illuminate\Support\Facades\Storage;
 
 class TeamMemberController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $members = TeamMember::orderBy('sort_order', 'asc')->orderBy('id', 'asc')->get();
+        $query = TeamMember::query();
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('position', 'like', "%{$search}%")
+                  ->orWhere('bio', 'like', "%{$search}%");
+            });
+        }
+
+        $members = $query->orderBy('sort_order', 'asc')->orderBy('id', 'asc')->get();
 
         return response()->json([
             'success' => true,
@@ -58,6 +69,8 @@ class TeamMemberController extends Controller
                 Storage::disk('public')->delete($teamMember->photo);
             }
             $validated['photo'] = $request->file('photo')->store('team_members', 'public');
+        } elseif (!array_key_exists('photo', $validated) || is_null($validated['photo']) || $validated['photo'] === '') {
+            unset($validated['photo']);
         }
 
         $teamMember->update($validated);

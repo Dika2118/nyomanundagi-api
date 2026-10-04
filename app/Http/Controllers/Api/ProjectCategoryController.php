@@ -15,6 +15,11 @@ class ProjectCategoryController extends Controller
     {
         $query = ProjectCategory::query();
 
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where('name', 'like', "%{$search}%");
+        }
+
         if ($request->boolean('with_projects')) {
             $query->with(['projects']);
         } else {

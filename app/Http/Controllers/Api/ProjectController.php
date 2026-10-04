@@ -24,7 +24,7 @@ class ProjectController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        if ($request->has('is_featured')) {
+        if ($request->filled('is_featured')) {
             $query->where('is_featured', $request->boolean('is_featured'));
         }
 
@@ -90,6 +90,8 @@ class ProjectController extends Controller
                 Storage::disk('public')->delete($project->thumbnail);
             }
             $validated['thumbnail'] = $request->file('thumbnail')->store('projects/thumbnails', 'public');
+        } elseif (!array_key_exists('thumbnail', $validated) || is_null($validated['thumbnail']) || $validated['thumbnail'] === '') {
+            unset($validated['thumbnail']);
         }
 
         $project->update($validated);

@@ -19,4 +19,11 @@ class UpdateHeroBannerRequest extends FormRequest
             'image' => ['nullable'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'Judul banner wajib diisi.',
+        ];
+    }
 }

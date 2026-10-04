@@ -19,4 +19,12 @@ class StoreHeroBannerRequest extends FormRequest
             'image' => ['required'], // can be string URL or uploaded image file
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'Judul banner wajib diisi.',
+            'image.required' => 'Gambar banner wajib diunggah atau diisi tautannya.',
+        ];
+    }
 }

@@ -24,11 +24,25 @@ class Project extends Model
         'is_featured',
     ];
 
-    protected function casts(): array
+    protected $casts = [
+        'is_featured' => 'boolean',
+    ];
+
+    protected $appends = [
+        'thumbnail_url',
+    ];
+
+    public function getThumbnailUrlAttribute(): ?string
     {
-        return [
-            'is_featured' => 'boolean',
-        ];
+        if (!$this->thumbnail) {
+            return null;
+        }
+
+        if (str_starts_with($this->thumbnail, 'http://') || str_starts_with($this->thumbnail, 'https://')) {
+            return $this->thumbnail;
+        }
+
+        return url('storage/' . $this->thumbnail);
     }
 
     public function category(): BelongsTo
