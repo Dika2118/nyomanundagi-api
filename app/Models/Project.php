@@ -11,6 +11,7 @@ class Project extends Model
 {
     protected $fillable = [
         'category_id',
+        'customer_id',
         'title',
         'location',
         'year',
@@ -48,6 +49,11 @@ class Project extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(ProjectCategory::class, 'category_id');
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class, 'customer_id');
     }
 
     public function images(): HasMany

@@ -14,10 +14,14 @@ class ProjectController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $query = Project::with(['category', 'images']);
+        $query = Project::with(['category', 'images', 'customer']);
 
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->input('category_id'));
+        }
+
+        if ($request->filled('customer_id')) {
+            $query->where('customer_id', $request->input('customer_id'));
         }
 
         if ($request->filled('status')) {
@@ -34,7 +38,11 @@ class ProjectController extends Controller
                 $q->where('title', 'like', "%{$search}%")
                   ->orWhere('location', 'like', "%{$search}%")
                   ->orWhere('client_name', 'like', "%{$search}%")
-                  ->orWhere('year', 'like', "%{$search}%");
+                  ->orWhere('year', 'like', "%{$search}%")
+                  ->orWhereHas('customer', function ($cq) use ($search) {
+                      $cq->where('name', 'like', "%{$search}%")
+                         ->orWhere('company_name', 'like', "%{$search}%");
+                  });
             });
         }
 
@@ -61,7 +69,7 @@ class ProjectController extends Controller
         }
 
         $project = Project::create($validated);
-        $project->load(['category', 'images']);
+        $project->load(['category', 'images', 'customer']);
 
         return response()->json([
             'success' => true,
@@ -72,7 +80,7 @@ class ProjectController extends Controller
 
     public function show(Project $project): JsonResponse
     {
-        $project->load(['category', 'images']);
+        $project->load(['category', 'images', 'customer']);
 
         return response()->json([
             'success' => true,
@@ -95,7 +103,7 @@ class ProjectController extends Controller
         }
 
         $project->update($validated);
-        $project->load(['category', 'images']);
+        $project->load(['category', 'images', 'customer']);
 
         return response()->json([
             'success' => true,
